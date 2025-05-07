@@ -9,7 +9,7 @@ import clip
 import os
 
 DATASET = 'Paris_val'
-MODEL = 'clip'
+MODEL = 'dinov2'
 
 data_dir = DATASET
 image_dir = os.path.join(data_dir, 'images')
