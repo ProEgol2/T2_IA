@@ -8,8 +8,8 @@ import torch
 import clip
 import os
 
-DATASET = 'VOC_val'
-MODEL = 'dinov2'
+DATASET = 'simple1k'
+MODEL = 'resnet18'
 
 data_dir = DATASET
 image_dir = os.path.join(data_dir, 'images')
@@ -45,20 +45,37 @@ for idx1 in range(len(sim)):
             P.append(count/(idx2+1))
     APs.append(sum(P)/count if count != 0 else 0)
 
-    result = []
+APs = np.array(APs)
 
-    for i in range(11):
-        threshold = i / 10
-        eligible_indices = [j for j in range(len(P)) if ((j+1) / len(P)) >= threshold]
-        if eligible_indices:
-            max_val = max(P[j] for j in eligible_indices)
-        else:
-            max_val = P[-1]
-        result.append(max_val)
-    interpolated_precision.append(result)
-    print(result)
-avg_interpolated_precision = (np.mean(np.array(interpolated_precision), axis=0))
-#print(avg_interpolated_precision)
+#five_idx = np.argsort(-APs)[:5] For 5 best Aps
+five_idx = np.argsort(APs)[:5]
+
+fig, ax = plt.subplots(5,10, figsize=(22, 10))
+ax = ax.flatten()
+count = 0
+
+for i, idx in enumerate(five_idx):
+    filename = os.path.join(image_dir, files[idx][0])
+    im = io.imread(filename)
+    im = transform.resize(im, (64,64)) 
+    ax[count].imshow(im)                 
+    ax[count].set_axis_off()
+    ax[count].set_title(f"{files[idx][1]}, AP = {APs[idx]}", fontsize = 8)
+    count += 1
+    for j, idx2 in enumerate(sim_idx[idx, 1:10]):
+        filename = os.path.join(image_dir, files[idx2][0])
+        im = io.imread(filename)
+        im = transform.resize(im, (64,64)) 
+        ax[count].imshow(im)                 
+        ax[count].set_axis_off()
+        ax[count].set_title(files[idx2][1], fontsize = 8)
+        count += 1
+ax[0].patch.set(lw=6, ec='b')
+ax[0].set_axis_off()
+plt.subplots_adjust(hspace=0.8)
+plt.savefig(f"5_worst_{MODEL}_{DATASET}.jpg", format='jpg', dpi=300, bbox_inches='tight')
+plt.show()
 
 #MAP = np.mean(APs)
 #print(MAP)
+
