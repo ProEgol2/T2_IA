@@ -1,4 +1,4 @@
-Four codes are presented:
+Three codes are presented:
 - compte_featres.py: Obtain a file containing the feature vectors of every image of a dataset.
 - compute_pres.py: Calculate the presicions for every image of a dataset as query, obtains AP and prints mAP, plot presicion-recall curve.
 - best_worst_retrievals.py: Plot a graph of the 5 best or worst retrieval results.
