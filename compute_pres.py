@@ -8,10 +8,10 @@ import torch
 import clip
 import os
 
-DATASET = 'VOC_val'
-MODEL = 'dinov2'
+DATASET = 'simple1k'
+MODEL = 'resnet18'
 
-data_dir = DATASET
+data_dir = 'simple1k'
 image_dir = os.path.join(data_dir, 'images')
 list_of_images = os.path.join(data_dir, 'list_of_images.txt')
 
@@ -25,14 +25,12 @@ else:
         files = [f.split('\t') for f in file]
         # [[im_path, label], ...]
 
-#--- compute similarity
 feats = np.load(feat_file)    
 norm2 = np.linalg.norm(feats, ord = 2, axis = 1,  keepdims = True)
 feats_n = feats / norm2
 sim = feats_n @ np.transpose(feats_n)
 sim_idx = np.argsort(-sim, axis = 1)
 
-#Average precision
 APs = []
 interpolated_precision = []
 
@@ -56,9 +54,23 @@ for idx1 in range(len(sim)):
             max_val = P[-1]
         result.append(max_val)
     interpolated_precision.append(result)
-    print(result)
+    #print(result)
+
 avg_interpolated_precision = (np.mean(np.array(interpolated_precision), axis=0))
+r = np.array([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])
+
+plot = plt.plot(r, avg_interpolated_precision)
+
+plt.title(f"Precision-Recall Curve\n{MODEL}, {DATASET}")
+plt.xlabel("Recall")
+plt.ylabel("Precision")
+plt.yticks(np.arange(0, 1.01, 0.2))
+plt.yticks(np.arange(0, 1.01, 0.2))
+plt.grid(True)
+plt.savefig(f"P-C_{MODEL}_{DATASET}.jpg", format='jpg', dpi=300, bbox_inches='tight')
+plt.show()
+
 #print(avg_interpolated_precision)
 
-#MAP = np.mean(APs)
-#print(MAP)
+MAP = np.mean(APs)
+print(MAP)

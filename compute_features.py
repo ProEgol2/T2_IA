@@ -11,7 +11,7 @@ import os
 DATASET = 'Paris_val'
 MODEL = 'dinov2'
 
-data_dir = DATASET
+data_dir = 'Paris_val'
 image_dir = os.path.join(data_dir, 'images')
 list_of_images = os.path.join(data_dir, 'list_of_images.txt')
 
@@ -33,8 +33,7 @@ preprocess = transforms.Compose([
         mean=[0.485, 0.456, 0.406], 
         std=[0.229, 0.224, 0.225]),
     ])
-
-#Load the model     
+  
 model = None
 if MODEL == 'resnet18' :
     model = models.resnet18(pretrained=True).to(device)
@@ -52,7 +51,6 @@ if MODEL == 'dinov2' :
     model = torch.hub.load('facebookresearch/dinov2', 'dinov2_vits14').to(device)
     dim = 384
 
-#Get features
 with torch.no_grad():        
     n_images = len(files)
     features = np.zeros((n_images, dim), dtype = np.float32)

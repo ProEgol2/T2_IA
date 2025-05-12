@@ -11,7 +11,7 @@ import os
 DATASET = 'simple1k'
 MODEL = 'resnet18'
 
-data_dir = DATASET
+data_dir = 'simple1k'
 image_dir = os.path.join(data_dir, 'images')
 list_of_images = os.path.join(data_dir, 'list_of_images.txt')
 
@@ -25,14 +25,12 @@ else:
         files = [f.split('\t') for f in file]
         # [[im_path, label], ...]
 
-#--- compute similarity
 feats = np.load(feat_file)    
 norm2 = np.linalg.norm(feats, ord = 2, axis = 1,  keepdims = True)
 feats_n = feats / norm2
 sim = feats_n @ np.transpose(feats_n)
 sim_idx = np.argsort(-sim, axis = 1)
 
-#Average precision
 APs = []
 interpolated_precision = []
 
